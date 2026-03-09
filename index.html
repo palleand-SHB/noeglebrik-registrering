@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="da">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nøglebrik Registrering – Gandrup Plejehjem Afd. 65</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6c0417;
+            --primary-dark: #5a0313;
+            --primary-light: rgba(108, 4, 23, 0.08);
+            --bg: #f3f4f6;
+            --card: #ffffff;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --input-bg: #f9fafb;
+            --green: #059669;
+            --green-light: #ecfdf5;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 24px 20px;
+        }
+
+        /* ── Step Indicator ── */
+        .steps-bar {
+            max-width: 640px;
+            margin: 0 auto 28px;
+            display: flex;
+            align-items: center;
+            gap: 0;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .step-num {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+            transition: all 0.3s;
+        }
+
+        .step.active .step-num {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .step.done .step-num {
+            background: var(--green);
+            color: #fff;
+        }
+
+        .step.inactive .step-num {
+            background: #e5e7eb;
+            color: #9ca3af;
+        }
+
+        .step.active .step-label {
+            color: var(--primary);
+        }
+
+        .step.done .step-label {
+            color: var(--green);
+        }
+
+        .step.inactive .step-label {
+            color: #9ca3af;
+        }
+
+        .step-connector {
+            flex: 1;
+            height: 2px;
+            background: #e5e7eb;
+            margin: 0 12px;
+            border-radius: 2px;
+        }
+
+        .step-connector.done {
+            background: var(--green);
+        }
+
+        /* ── Card ── */
+        .card {
+            background: var(--card);
+            max-width: 640px;
+            margin: 0 auto;
+            border-radius: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.09), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: var(--primary);
+            padding: 32px 40px 28px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .card-header img {
+            height: 40px;
+            filter: brightness(0) invert(1);
+        }
+
+        .card-header-text h1 {
+            color: #fff;
+            font-size: 20px;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .card-header-text p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .card-body {
+            padding: 36px 40px;
+        }
+
+        /* ── Form Elements ── */
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 13px 16px;
+            background: var(--input-bg);
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 15px;
+            color: var(--text);
+            transition: all 0.2s;
+            outline: none;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--primary-light);
+            background: #fff;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        /* ── File Upload ── */
+        .file-zone {
+            border: 2px dashed #d1d5db;
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #fafafa;
+        }
+
+        .file-zone:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .file-zone input {
+            display: none;
+        }
+
+        .file-zone-icon {
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .file-zone-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .file-zone-sub {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        #file-name {
+            font-size: 12px;
+            color: var(--green);
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        /* ── Info Box ── */
+        .info-box {
+            background: #fffbeb;
+            border: 1.5px solid #fbbf24;
+            border-radius: 14px;
+            padding: 16px 20px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #92400e;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            margin-bottom: 24px;
+        }
+
+        /* ── Buttons ── */
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 14px;
+            font-family: inherit;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(108, 4, 23, 0.25);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            box-shadow: 0 8px 20px rgba(108, 4, 23, 0.3);
+        }
+
+        .btn-outline {
+            background: #fff;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-light);
+        }
+
+        .btn-green {
+            background: var(--green);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(5, 150, 105, 0.25);
+        }
+
+        .btn-green:hover {
+            background: #047857;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        /* ── Pages ── */
+        #page-form {
+            display: block;
+        }
+
+        #page-receipt {
+            display: none;
+        }
+
+        /* ── Receipt Styles ── */
+        .receipt-preview {
+            border: 1.5px solid var(--border);
+            border-radius: 18px;
+            padding: 36px;
+            background: #fff;
+            margin-bottom: 28px;
+        }
+
+        .receipt-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--primary);
+            margin-bottom: 24px;
+        }
+
+        .receipt-header img {
+            height: 32px;
+        }
+
+        .receipt-title {
+            font-size: 18px;
+            font-weight: 900;
+            color: var(--primary);
+        }
+
+        .receipt-subtitle {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        .receipt-data-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .receipt-field {
+            background: var(--input-bg);
+            border-radius: 10px;
+            padding: 12px 16px;
+        }
+
+        .receipt-field-label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--muted);
+        }
+
+        .receipt-field-value {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+            margin-top: 2px;
+        }
+
+        .terms-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-top: 20px;
+            margin-bottom: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .terms-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .terms-list li {
+            font-size: 12.5px;
+            line-height: 1.65;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            gap: 10px;
+        }
+
+        .terms-list li:last-child {
+            border-bottom: none;
+        }
+
+        .terms-list li .term-icon {
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .sig-section {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 2px solid var(--border);
+        }
+
+        .sig-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--muted);
+            margin-bottom: 18px;
+        }
+
+        .sig-line {
+            border-bottom: 1.5px solid #374151;
+            margin-bottom: 6px;
+            height: 32px;
+        }
+
+        .sig-label {
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .sig-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 24px;
+        }
+
+        /* ── Print Styles ── */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .steps-bar,
+            .card-header,
+            .print-controls,
+            .btn-row {
+                display: none !important;
+            }
+
+            .card {
+                box-shadow: none;
+                border: none;
+                border-radius: 0;
+                max-width: 100%;
+            }
+
+            .card-body {
+                padding: 0;
+            }
+
+            #page-receipt {
+                display: block !important;
+            }
+
+            .receipt-preview {
+                border: none;
+                padding: 0;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .card-body {
+                padding: 24px 20px;
+            }
+
+            .card-header {
+                padding: 24px 20px;
+            }
+
+            .grid,
+            .receipt-data-grid,
+            .sig-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-row {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Step Indicator -->
+    <div class="steps-bar" id="steps-bar">
+        <div class="step active" id="step1">
+            <div class="step-num">1</div>
+            <div class="step-label">Registrering</div>
+        </div>
+        <div class="step-connector" id="connector"></div>
+        <div class="step inactive" id="step2">
+            <div class="step-num">2</div>
+            <div class="step-label">Kvittering</div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+     PAGE 1: Registration Form
+═══════════════════════════════════════════ -->
+    <div id="page-form">
+        <div class="card">
+            <div class="card-header">
+                <img src="https://cdn.moliri.dk/image/moliri-public/sundbyhvorup/thumbnail?filename=shb_logo_neg.png&folderPath=Hjemmeside%2fSite+Identity&width=300"
+                    alt="SHB Logo">
+                <div class="card-header-text">
+                    <h1>Nøglebrik Registrering</h1>
+                    <p>Gandrup Plejehjem · Afdeling 65</p>
+                </div>
+            </div>
+            <div class="card-body">
+
+                <div class="info-box">
+                    <span style="font-size:18px; flex-shrink:0;">💡</span>
+                    <span><strong>Vejledning:</strong> Udfyld formularen nedenfor. Derefter genereres en
+                        udleveringskvittering til underskrift, som efterfølgende vedhæftes og sendes til
+                        administrationen.</span>
+                </div>
+
+                <form action="https://formsubmit.co/info@sundbyhvorup.dk" method="POST" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="navn">Navn på medarbejder *</label>
+                        <input type="text" id="navn" name="Navn" placeholder="Fulde navn" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="brugerstatus">Brugerstatus *</label>
+                        <select id="brugerstatus" name="Brugerstatus" required>
+                            <option value="" disabled selected>Vælg status...</option>
+                            <option value="Fastansat">Fastansat</option>
+                            <option value="Vikar">Vikar</option>
+                            <option value="Elev/Studerende">Elev/Studerende</option>
+                            <option value="Nattevagt">Nattevagt</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="brik_nummer">Brik nummer (ID) *</label>
+                        <input type="text" id="brik_nummer" name="Brik_nummer" placeholder="Eks. 12345678" required>
+                    </div>
+
+                    <div class="grid">
+                        <div class="form-group">
+                            <label for="aktiveringsdato">Aktiveringsdato *</label>
+                            <input type="date" id="aktiveringsdato" name="Aktiveringsdato" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="gyldig_til">Gyldig til (valgfri)</label>
+                            <input type="date" id="gyldig_til" name="Gyldig_til">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Underskrevet kvittering (PDF/Billede) *</label>
+                        <div class="file-zone" onclick="document.getElementById('bilag').click()">
+                            <div class="file-zone-icon">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                    <polyline points="17 8 12 3 7 8" />
+                                    <line x1="12" y1="3" x2="12" y2="15" />
+                                </svg>
+                            </div>
+                            <div class="file-zone-label">Klik for at vedhæfte fil</div>
+                            <div class="file-zone-sub">PDF eller billede af underskrevet kvittering</div>
+                            <div id="file-name"></div>
+                            <input type="file" id="bilag" name="Underskrevet_kvitering" accept="image/*,.pdf"
+                                onchange="showFileName(this)">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="kommentarer">Kommentarer</label>
+                        <textarea id="kommentarer" name="Kommentarer" rows="3"
+                            placeholder="Yderligere information..."></textarea>
+                    </div>
+
+                    <!-- Hidden FormSubmit fields -->
+                    <input type="hidden" name="_subject" value="Nøglebrik Registrering – Gandrup Plejehjem Afd. 65">
+                    <input type="hidden" name="_captcha" value="false">
+                    <input type="hidden" name="_next" value="about:blank">
+                    <input type="hidden" name="_template" value="table">
+
+                    <div class="btn-row">
+                        <button type="button" class="btn btn-outline" onclick="goToReceipt()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="5" y="2" width="14" height="20" rx="2" />
+                                <line x1="9" y1="9" x2="15" y2="9" />
+                                <line x1="9" y1="13" x2="15" y2="13" />
+                                <line x1="9" y1="17" x2="13" y2="17" />
+                            </svg>
+                            Generer &amp; Print Kvittering
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            Send til Administrationen
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="22" y1="2" x2="11" y2="13" />
+                                <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                            </svg>
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+        <div class="footer-note">Gandrup Plejehjem · Afd. 65 · Sundby-Hvorup Boligselskab</div>
+    </div>
+
+
+    <!-- ═══════════════════════════════════════════
+     PAGE 2: Receipt / Declaration
+═══════════════════════════════════════════ -->
+    <div id="page-receipt">
+        <div class="card">
+            <div class="card-body">
+
+                <!-- Print Controls (hidden on print) -->
+                <div class="print-controls btn-row" style="margin-bottom: 24px;">
+                    <button class="btn btn-outline" onclick="goToForm()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="15 18 9 12 15 6" />
+                        </svg>
+                        Tilbage til formular
+                    </button>
+                    <button class="btn btn-primary" onclick="window.print()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 6 2 18 2 18 9" />
+                            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+                            <rect x="6" y="14" width="12" height="8" />
+                        </svg>
+                        Udskriv Kvittering
+                    </button>
+                </div>
+
+                <!-- Printable Receipt -->
+                <div class="receipt-preview">
+
+                    <div class="receipt-header">
+                        <img src="https://cdn.moliri.dk/image/moliri-public/sundbyhvorup/thumbnail?filename=shb_logo_neg.png&folderPath=Hjemmeside%2fSite+Identity&width=300"
+                            alt="SHB Logo"
+                            style="filter: brightness(0) saturate(100%) invert(11%) sepia(34%) saturate(7400%) hue-rotate(338deg) brightness(88%) contrast(106%);">
+                        <div>
+                            <div class="receipt-title">Udleveringskvittering – Nøglebrik</div>
+                            <div class="receipt-subtitle">Gandrup Plejehjem · Afdeling 65 · Sundby-Hvorup Boligselskab
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Data Fields -->
+                    <div class="receipt-data-grid">
+                        <div class="receipt-field">
+                            <div class="receipt-field-label">Medarbejder</div>
+                            <div class="receipt-field-value" id="r-navn">–</div>
+                        </div>
+                        <div class="receipt-field">
+                            <div class="receipt-field-label">Brugerstatus</div>
+                            <div class="receipt-field-value" id="r-status">–</div>
+                        </div>
+                        <div class="receipt-field">
+                            <div class="receipt-field-label">Brik nummer</div>
+                            <div class="receipt-field-value" id="r-brik">–</div>
+                        </div>
+                        <div class="receipt-field">
+                            <div class="receipt-field-label">Aktiveringsdato</div>
+                            <div class="receipt-field-value" id="r-start">–</div>
+                        </div>
+                    </div>
+
+                    <!-- Terms -->
+                    <div class="terms-title">Vilkår for brug af nøglebrik</div>
+                    <p style="font-size:13px; line-height:1.6; color:#374151; margin-bottom:16px;">
+                        Undertegnede bekræfter hermed modtagelsen af ovennævnte nøglebrik og erklærer sig indforstået
+                        med følgende vilkår:
+                    </p>
+                    <ul class="terms-list">
+                        <li>
+                            <span class="term-icon">🔐</span>
+                            <span><strong>Personlig brug:</strong> Nøglebrikken er strengt personlig. Den må under ingen
+                                omstændigheder udlånes, overdrages eller kopieres til andre (kolleger, familie eller
+                                venner).</span>
+                        </li>
+                        <li>
+                            <span class="term-icon">🚨</span>
+                            <span><strong>Tab af brik:</strong> Hvis brikken mistes eller bliver stjålet, skal dette
+                                straks anmeldes til plejehjemslederen eller boligselskabets administration, så brikken
+                                kan spærres i systemet og misbrug undgås.</span>
+                        </li>
+                        <li>
+                            <span class="term-icon">🔒</span>
+                            <span><strong>Sikkerhed:</strong> Medarbejderen er ansvarlig for at opbevare brikken
+                                forsvarligt. Den må ikke ligge synligt eller efterlades i ulåste
+                                biler/omklædningsrum.</span>
+                        </li>
+                        <li>
+                            <span class="term-icon">⚠️</span>
+                            <span><strong>Misbrug:</strong> Uberettiget brug af nøglebrikken eller udlån af denne kan
+                                have ansættelsesretlige konsekvenser.</span>
+                        </li>
+                        <li>
+                            <span class="term-icon">📋</span>
+                            <span><strong>Fratrædelse:</strong> Ved ophør af ansættelsesforholdet (uanset årsag) skal
+                                nøglebrikken afleveres personligt til plejehjemslederen senest på sidste
+                                arbejdsdag.</span>
+                        </li>
+                    </ul>
+
+                    <!-- Signature Section -->
+                    <div class="sig-section">
+                        <div class="sig-title">Underskrift</div>
+                        <div class="sig-grid">
+                            <div>
+                                <div class="sig-line"></div>
+                                <div class="sig-label">Dato</div>
+                            </div>
+                            <div>
+                                <div class="sig-line"></div>
+                                <div class="sig-label">Medarbejderens underskrift</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 20px;">
+                            <div class="sig-line"></div>
+                            <div class="sig-label">Navn med blokbogstaver</div>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- End Printable Receipt -->
+
+            </div>
+        </div>
+        <div class="footer-note">Gandrup Plejehjem · Afd. 65 · Sundby-Hvorup Boligselskab | info@sundbyhvorup.dk</div>
+    </div>
+
+
+    <script>
+        // Set today's date as default for activation date
+        document.getElementById('aktiveringsdato').valueAsDate = new Date();
+
+        function showFileName(input) {
+            const label = document.getElementById('file-name');
+            label.textContent = input.files.length > 0 ? '✓ ' + input.files[0].name : '';
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '–';
+            const [y, m, d] = dateStr.split('-');
+            return `${d}/${m}/${y}`;
+        }
+
+        function goToReceipt() {
+            const navn = document.getElementById('navn').value.trim();
+            const status = document.getElementById('brugerstatus').value;
+            const brik = document.getElementById('brik_nummer').value.trim();
+            const start = document.getElementById('aktiveringsdato').value;
+
+            if (!navn || !status || !brik || !start) {
+                alert('Udfyld venligst: Navn, Brugerstatus, Brik nummer og Aktiveringsdato – inden du printer kvitteringen.');
+                return;
+            }
+
+            // Populate receipt fields
+            document.getElementById('r-navn').textContent = navn;
+            document.getElementById('r-status').textContent = status;
+            document.getElementById('r-brik').textContent = brik;
+            document.getElementById('r-start').textContent = formatDate(start);
+
+            // Switch view
+            document.getElementById('page-form').style.display = 'none';
+            document.getElementById('page-receipt').style.display = 'block';
+
+            // Update step indicators
+            document.getElementById('step1').className = 'step done';
+            document.getElementById('step2').className = 'step active';
+            document.getElementById('connector').className = 'step-connector done';
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function goToForm() {
+            document.getElementById('page-form').style.display = 'block';
+            document.getElementById('page-receipt').style.display = 'none';
+
+            document.getElementById('step1').className = 'step active';
+            document.getElementById('step2').className = 'step inactive';
+            document.getElementById('connector').className = 'step-connector';
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function sendEmail() {
+            const navn = document.getElementById('navn').value;
+            const status = document.getElementById('brugerstatus').value;
+            const brik = document.getElementById('brik_nummer').value;
+            const start = document.getElementById('aktiveringsdato').value;
+            const slut = document.getElementById('gyldig_til').value || 'Ikke angivet';
+            const kommentar = document.getElementById('kommentarer').value || 'Ingen';
+
+            if (!navn || !status || !brik || !start) {
+                alert('Udfyld venligst alle de påkrævede felter (markeret med *).');
+                return;
+            }
+
+            const modtager = 'info@sundbyhvorup.dk';
+            const emne = 'Nøglebrik Registrering – Afd. 65 – ' + navn;
+
+            let body = 'Hej Administration,\n\n';
+            body += 'Her er data på nyudleveret nøglebrik til Gandrup Plejehjem (Afd. 65):\n\n';
+            body += '👤 Navn:             ' + navn + '\n';
+            body += '📋 Brugerstatus:     ' + status + '\n';
+            body += '🔑 Brik nr.:         ' + brik + '\n';
+            body += '📅 Aktiveringsdato:  ' + formatDate(start) + '\n';
+            body += '⏳ Gyldig til:       ' + (slut !== 'Ikke angivet' ? formatDate(slut) : slut) + '\n';
+            body += '💬 Kommentarer:      ' + kommentar + '\n\n';
+            body += '⚠️  HUSK: Vedhæft den underskrevne kvittering til denne mail, inden du sender den.\n\n';
+            body += 'Med venlig hilsen\nGandrup Plejehjem – Afd. 65';
+
+            window.location.href = 'mailto:' + modtager + '?subject=' + encodeURIComponent(emne) + '&body=' + encodeURIComponent(body);
+        }
+    </script>
+
+</body>
+
+</html>
