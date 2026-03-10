@@ -670,12 +670,12 @@
 
                 <!-- Print Controls (hidden on print) -->
                 <div class="print-controls btn-row" style="margin-bottom: 24px;">
-                    <button class="btn btn-red" onclick="goToForm()">
+                    <button class="btn btn-outline" onclick="goToForm()">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="15 18 9 12 15 6" />
                         </svg>
-                        Gå til Trin 2 (Vedhæft &amp; Send)
+                        Tilbage til formular
                     </button>
                     <button class="btn btn-primary" onclick="window.print()">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -836,6 +836,11 @@
                     if (response.ok) {
                         form.style.display = 'none';
                         document.getElementById('success-msg').style.display = 'block';
+
+                        // Set both steps to perfectly done (green)
+                        document.getElementById('step1').className = 'step done';
+                        document.getElementById('step2').className = 'step done';
+                        document.getElementById('connector').className = 'step-connector done';
                     } else {
                         alert('Data kunne ikke sendes til Make. Fejlkode: ' + response.status);
                     }
@@ -883,9 +888,10 @@
                 document.getElementById('page-form').style.display = 'block';
                 document.getElementById('page-receipt').style.display = 'none';
 
-                document.getElementById('step1').className = 'step active';
-                document.getElementById('step2').className = 'step inactive';
-                document.getElementById('connector').className = 'step-connector';
+                // Keep Step 1 done and Step 2 active since we are finishing up
+                document.getElementById('step1').className = 'step done';
+                document.getElementById('step2').className = 'step active';
+                document.getElementById('connector').className = 'step-connector done';
 
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
