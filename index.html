@@ -201,7 +201,8 @@
             background: #fafafa;
         }
 
-        .file-zone:hover {
+        .file-zone:hover,
+        .file-zone.drag-over {
             border-color: var(--primary);
             background: var(--primary-light);
         }
@@ -303,6 +304,17 @@
 
         .btn-green:hover {
             background: #047857;
+        }
+
+        .btn-red {
+            background: #dc2626;
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(220, 38, 38, 0.25);
+        }
+
+        .btn-red:hover {
+            background: #b91c1c;
+            box-shadow: 0 8px 20px rgba(220, 38, 38, 0.3);
         }
 
         .btn-row {
@@ -658,12 +670,12 @@
 
                 <!-- Print Controls (hidden on print) -->
                 <div class="print-controls btn-row" style="margin-bottom: 24px;">
-                    <button class="btn btn-outline" onclick="goToForm()">
+                    <button class="btn btn-red" onclick="goToForm()">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="15 18 9 12 15 6" />
                         </svg>
-                        Tilbage til formular
+                        Gå til Trin 2 (Vedhæft &amp; Send)
                     </button>
                     <button class="btn btn-primary" onclick="window.print()">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -776,6 +788,33 @@
         <script>
             // Set today's date as default for activation date
             document.getElementById('aktiveringsdato').valueAsDate = new Date();
+
+            // Setup Drag & Drop for file zone
+            document.addEventListener('DOMContentLoaded', () => {
+                const dropZone = document.querySelector('.file-zone');
+                const fileInput = document.getElementById('bilag');
+
+                dropZone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    dropZone.classList.add('drag-over');
+                });
+
+                ['dragleave', 'dragend'].forEach(type => {
+                    dropZone.addEventListener(type, (e) => {
+                        e.preventDefault();
+                        dropZone.classList.remove('drag-over');
+                    });
+                });
+
+                dropZone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    dropZone.classList.remove('drag-over');
+                    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                        fileInput.files = e.dataTransfer.files;
+                        showFileName(fileInput);
+                    }
+                });
+            });
 
             function showFileName(input) {
                 const label = document.getElementById('file-name');
