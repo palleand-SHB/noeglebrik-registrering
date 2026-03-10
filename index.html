@@ -582,7 +582,22 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Underskrevet kvittering (PDF/Billede) *</label>
+                        <label>1. Først, generér og print kvittering til underskrift</label>
+                        <button type="button" class="btn btn-outline"
+                            style="width: 100%; justify-content: center; margin-bottom: 8px;" onclick="goToReceipt()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="5" y="2" width="14" height="20" rx="2" />
+                                <line x1="9" y1="9" x2="15" y2="9" />
+                                <line x1="9" y1="13" x2="15" y2="13" />
+                                <line x1="9" y1="17" x2="13" y2="17" />
+                            </svg>
+                            Generer &amp; Print Kvittering
+                        </button>
+                    </div>
+
+                    <div class="form-group">
+                        <label>2. Derefter, vedhæft den underskrevne kvittering *</label>
                         <div class="file-zone" onclick="document.getElementById('bilag').click()">
                             <div class="file-zone-icon">
                                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -606,17 +621,7 @@
                             placeholder="Yderligere information..."></textarea>
                     </div>
 
-                    <div class="btn-row">
-                        <button type="button" class="btn btn-outline" onclick="goToReceipt()">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="5" y="2" width="14" height="20" rx="2" />
-                                <line x1="9" y1="9" x2="15" y2="9" />
-                                <line x1="9" y1="13" x2="15" y2="13" />
-                                <line x1="9" y1="17" x2="13" y2="17" />
-                            </svg>
-                            Generer &amp; Print Kvittering
-                        </button>
+                    <div class="btn-row" style="justify-content: flex-end;">
                         <button type="submit" class="btn btn-primary">
                             Send til Administrationen
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
