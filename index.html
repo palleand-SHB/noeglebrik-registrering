@@ -727,7 +727,8 @@
                             <span class="term-icon">🚨</span>
                             <span><strong>Tab af brik:</strong> Hvis brikken mistes eller bliver stjålet, skal dette
                                 straks anmeldes til plejehjemslederen eller boligselskabets administration, så brikken
-                                kan spærres i systemet og misbrug undgås.</span>
+                                kan spærres i systemet og misbrug undgås. Det koster 200 kr. at få erstattet en mistet
+                                brik.</span>
                         </li>
                         <li>
                             <span class="term-icon">🔒</span>
@@ -761,129 +762,125 @@
                                 <div class="sig-label">Medarbejderens underskrift</div>
                             </div>
                         </div>
-                        <div style="margin-top: 20px;">
-                            <div class="sig-line"></div>
-                            <div class="sig-label">Navn med blokbogstaver</div>
-                        </div>
+
                     </div>
+                    <!-- End Printable Receipt -->
 
                 </div>
-                <!-- End Printable Receipt -->
-
+            </div>
+            <div class="footer-note">Gandrup Plejehjem · Afd. 65 · Sundby-Hvorup Boligselskab | info@sundbyhvorup.dk
             </div>
         </div>
-        <div class="footer-note">Gandrup Plejehjem · Afd. 65 · Sundby-Hvorup Boligselskab | info@sundbyhvorup.dk</div>
-    </div>
 
 
-    <script>
-        // Set today's date as default for activation date
-        document.getElementById('aktiveringsdato').valueAsDate = new Date();
+        <script>
+            // Set today's date as default for activation date
+            document.getElementById('aktiveringsdato').valueAsDate = new Date();
 
-        function showFileName(input) {
-            const label = document.getElementById('file-name');
-            label.textContent = input.files.length > 0 ? '✓ ' + input.files[0].name : '';
-        }
+            function showFileName(input) {
+                const label = document.getElementById('file-name');
+                label.textContent = input.files.length > 0 ? '✓ ' + input.files[0].name : '';
+            }
 
-        async function handleSubmit(event) {
-            event.preventDefault();
-            const form = event.target;
-            const formData = new FormData(form);
+            async function handleSubmit(event) {
+                event.preventDefault();
+                const form = event.target;
+                const formData = new FormData(form);
 
-            try {
-                // Post form data to Make.com Webhook URL
-                const response = await fetch('https://hook.eu1.make.com/c56ekut9xsl7eq3fgwzrk3rvkoa7vh32', {
-                    method: 'POST',
-                    body: formData
-                });
+                try {
+                    // Post form data to Make.com Webhook URL
+                    const response = await fetch('https://hook.eu1.make.com/c56ekut9xsl7eq3fgwzrk3rvkoa7vh32', {
+                        method: 'POST',
+                        body: formData
+                    });
 
-                if (response.ok) {
-                    form.style.display = 'none';
-                    document.getElementById('success-msg').style.display = 'block';
-                } else {
-                    alert('Data kunne ikke sendes til Make. Fejlkode: ' + response.status);
+                    if (response.ok) {
+                        form.style.display = 'none';
+                        document.getElementById('success-msg').style.display = 'block';
+                    } else {
+                        alert('Data kunne ikke sendes til Make. Fejlkode: ' + response.status);
+                    }
+                } catch (error) {
+                    alert('Der opstod en systemfejl ved afsendelse. Prøv igen.');
                 }
-            } catch (error) {
-                alert('Der opstod en systemfejl ved afsendelse. Prøv igen.');
-            }
-        }
-
-        function formatDate(dateStr) {
-            if (!dateStr) return '–';
-            const [y, m, d] = dateStr.split('-');
-            return `${d}/${m}/${y}`;
-        }
-
-        function goToReceipt() {
-            const navn = document.getElementById('navn').value.trim();
-            const status = document.getElementById('brugerstatus').value;
-            const brik = document.getElementById('brik_nummer').value.trim();
-            const start = document.getElementById('aktiveringsdato').value;
-
-            if (!navn || !status || !brik || !start) {
-                alert('Udfyld venligst: Navn, Brugerstatus, Brik nummer og Aktiveringsdato – inden du printer kvitteringen.');
-                return;
             }
 
-            // Populate receipt fields
-            document.getElementById('r-navn').textContent = navn;
-            document.getElementById('r-status').textContent = status;
-            document.getElementById('r-brik').textContent = brik;
-            document.getElementById('r-start').textContent = formatDate(start);
-
-            // Switch view
-            document.getElementById('page-form').style.display = 'none';
-            document.getElementById('page-receipt').style.display = 'block';
-
-            // Update step indicators
-            document.getElementById('step1').className = 'step done';
-            document.getElementById('step2').className = 'step active';
-            document.getElementById('connector').className = 'step-connector done';
-
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function goToForm() {
-            document.getElementById('page-form').style.display = 'block';
-            document.getElementById('page-receipt').style.display = 'none';
-
-            document.getElementById('step1').className = 'step active';
-            document.getElementById('step2').className = 'step inactive';
-            document.getElementById('connector').className = 'step-connector';
-
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function sendEmail() {
-            const navn = document.getElementById('navn').value;
-            const status = document.getElementById('brugerstatus').value;
-            const brik = document.getElementById('brik_nummer').value;
-            const start = document.getElementById('aktiveringsdato').value;
-            const slut = document.getElementById('gyldig_til').value || 'Ikke angivet';
-            const kommentar = document.getElementById('kommentarer').value || 'Ingen';
-
-            if (!navn || !status || !brik || !start) {
-                alert('Udfyld venligst alle de påkrævede felter (markeret med *).');
-                return;
+            function formatDate(dateStr) {
+                if (!dateStr) return '–';
+                const [y, m, d] = dateStr.split('-');
+                return `${d}/${m}/${y}`;
             }
 
-            const modtager = 'info@sundbyhvorup.dk';
-            const emne = 'Nøglebrik Registrering – Afd. 65 – ' + navn;
+            function goToReceipt() {
+                const navn = document.getElementById('navn').value.trim();
+                const status = document.getElementById('brugerstatus').value;
+                const brik = document.getElementById('brik_nummer').value.trim();
+                const start = document.getElementById('aktiveringsdato').value;
 
-            let body = 'Hej Administration,\n\n';
-            body += 'Her er data på nyudleveret nøglebrik til Gandrup Plejehjem (Afd. 65):\n\n';
-            body += '👤 Navn:             ' + navn + '\n';
-            body += '📋 Brugerstatus:     ' + status + '\n';
-            body += '🔑 Brik nr.:         ' + brik + '\n';
-            body += '📅 Aktiveringsdato:  ' + formatDate(start) + '\n';
-            body += '⏳ Gyldig til:       ' + (slut !== 'Ikke angivet' ? formatDate(slut) : slut) + '\n';
-            body += '💬 Kommentarer:      ' + kommentar + '\n\n';
-            body += '⚠️  HUSK: Vedhæft den underskrevne kvittering til denne mail, inden du sender den.\n\n';
-            body += 'Med venlig hilsen\nGandrup Plejehjem – Afd. 65';
+                if (!navn || !status || !brik || !start) {
+                    alert('Udfyld venligst: Navn, Brugerstatus, Brik nummer og Aktiveringsdato – inden du printer kvitteringen.');
+                    return;
+                }
 
-            window.location.href = 'mailto:' + modtager + '?subject=' + encodeURIComponent(emne) + '&body=' + encodeURIComponent(body);
-        }
-    </script>
+                // Populate receipt fields
+                document.getElementById('r-navn').textContent = navn;
+                document.getElementById('r-status').textContent = status;
+                document.getElementById('r-brik').textContent = brik;
+                document.getElementById('r-start').textContent = formatDate(start);
+
+                // Switch view
+                document.getElementById('page-form').style.display = 'none';
+                document.getElementById('page-receipt').style.display = 'block';
+
+                // Update step indicators
+                document.getElementById('step1').className = 'step done';
+                document.getElementById('step2').className = 'step active';
+                document.getElementById('connector').className = 'step-connector done';
+
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            function goToForm() {
+                document.getElementById('page-form').style.display = 'block';
+                document.getElementById('page-receipt').style.display = 'none';
+
+                document.getElementById('step1').className = 'step active';
+                document.getElementById('step2').className = 'step inactive';
+                document.getElementById('connector').className = 'step-connector';
+
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            function sendEmail() {
+                const navn = document.getElementById('navn').value;
+                const status = document.getElementById('brugerstatus').value;
+                const brik = document.getElementById('brik_nummer').value;
+                const start = document.getElementById('aktiveringsdato').value;
+                const slut = document.getElementById('gyldig_til').value || 'Ikke angivet';
+                const kommentar = document.getElementById('kommentarer').value || 'Ingen';
+
+                if (!navn || !status || !brik || !start) {
+                    alert('Udfyld venligst alle de påkrævede felter (markeret med *).');
+                    return;
+                }
+
+                const modtager = 'info@sundbyhvorup.dk';
+                const emne = 'Nøglebrik Registrering – Afd. 65 – ' + navn;
+
+                let body = 'Hej Administration,\n\n';
+                body += 'Her er data på nyudleveret nøglebrik til Gandrup Plejehjem (Afd. 65):\n\n';
+                body += '👤 Navn:             ' + navn + '\n';
+                body += '📋 Brugerstatus:     ' + status + '\n';
+                body += '🔑 Brik nr.:         ' + brik + '\n';
+                body += '📅 Aktiveringsdato:  ' + formatDate(start) + '\n';
+                body += '⏳ Gyldig til:       ' + (slut !== 'Ikke angivet' ? formatDate(slut) : slut) + '\n';
+                body += '💬 Kommentarer:      ' + kommentar + '\n\n';
+                body += '⚠️  HUSK: Vedhæft den underskrevne kvittering til denne mail, inden du sender den.\n\n';
+                body += 'Med venlig hilsen\nGandrup Plejehjem – Afd. 65';
+
+                window.location.href = 'mailto:' + modtager + '?subject=' + encodeURIComponent(emne) + '&body=' + encodeURIComponent(body);
+            }
+        </script>
 
 </body>
 
