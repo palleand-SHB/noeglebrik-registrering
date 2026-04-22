@@ -190,6 +190,14 @@
             gap: 16px;
         }
 
+        .hidden {
+            display: none;
+        }
+
+        .mt-8 {
+            margin-top: 8px;
+        }
+
         /* ── File Upload ── */
         .file-zone {
             border: 2px dashed #d1d5db;
@@ -329,7 +337,7 @@
         }
 
         #page-receipt {
-            display: none;
+            display: none; /* Skjult på skærmen, men vises i @media print */
         }
 
         /* ── Receipt Styles ── */
@@ -467,12 +475,19 @@
         }
 
         /* ── Print Styles ── */
+        @page {
+            margin: 3cm;
+            size: A4;
+        }
+
         @media print {
             body {
-                background: white;
-                padding: 0;
+                background: white !important;
+                padding: 0 !important;
+                margin: 0 !important;
             }
 
+            #page-form,
             .steps-bar,
             .card-header,
             .print-controls,
@@ -481,14 +496,17 @@
             }
 
             .card {
-                box-shadow: none;
-                border: none;
-                border-radius: 0;
-                max-width: 100%;
+                box-shadow: none !important;
+                border: none !important;
+                border-radius: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
             }
 
             .card-body {
-                padding: 0;
+                padding: 0 !important;
             }
 
             #page-receipt {
@@ -496,8 +514,16 @@
             }
 
             .receipt-preview {
-                border: none;
-                padding: 0;
+                border: none !important;
+                padding: 1.5cm !important; /* Ekstra luft inde i dokumentet */
+                margin: 0 auto !important;
+                width: 100% !important;
+            }
+
+            /* Sikrer at farver og baggrunde kommer med */
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
         }
 
@@ -574,7 +600,13 @@
                             <option value="Vikar">Vikar</option>
                             <option value="Elev/Studerende">Elev/Studerende</option>
                             <option value="Nattevagt">Nattevagt</option>
+                            <option value="Andet">Andet...</option>
                         </select>
+                    </div>
+
+                    <div id="brugerstatus-andet-wrap" class="form-group hidden animate-in fade-in slide-in-from-top-1 duration-200">
+                        <label for="brugerstatus_andet">Angiv anden status/funktion *</label>
+                        <input type="text" id="brugerstatus_andet" name="Brugerstatus_Andet" placeholder="Eks. Fysioterapeut, Rengøring...">
                     </div>
 
                     <div class="form-group">
@@ -594,7 +626,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label>1. Først, generér og print kvittering til underskrift</label>
+                        <label>1. Generér og print kvittering til underskrift</label>
                         <button type="button" class="btn btn-outline"
                             style="width: 100%; justify-content: center; margin-bottom: 8px;" onclick="goToReceipt()">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -814,6 +846,22 @@
                         showFileName(fileInput);
                     }
                 });
+
+                // Conditional visibility for "Andet" status
+                const statusSelect = document.getElementById('brugerstatus');
+                const statusAndetWrap = document.getElementById('brugerstatus-andet-wrap');
+                const statusAndetInput = document.getElementById('brugerstatus_andet');
+
+                statusSelect.addEventListener('change', () => {
+                    if (statusSelect.value === 'Andet') {
+                        statusAndetWrap.classList.remove('hidden');
+                        statusAndetInput.setAttribute('required', 'required');
+                        statusAndetInput.focus();
+                    } else {
+                        statusAndetWrap.classList.add('hidden');
+                        statusAndetInput.removeAttribute('required');
+                    }
+                });
             });
 
             function showFileName(input) {
@@ -857,12 +905,22 @@
 
             function goToReceipt() {
                 const navn = document.getElementById('navn').value.trim();
-                const status = document.getElementById('brugerstatus').value;
+                let status = document.getElementById('brugerstatus').value;
                 const brik = document.getElementById('brik_nummer').value.trim();
                 const start = document.getElementById('aktiveringsdato').value;
 
+                // Handle "Andet" status
+                if (status === 'Andet') {
+                    const andetValue = document.getElementById('brugerstatus_andet').value.trim();
+                    if (!andetValue) {
+                        alert('Angiv venligst hvilken "Anden" status der er tale om.');
+                        return;
+                    }
+                    status = andetValue;
+                }
+
                 if (!navn || !status || !brik || !start) {
-                    alert('Udfyld venligst: Navn, Brugerstatus, Brik nummer og Aktiveringsdato – inden du printer kvitteringen.');
+                    alert('Udfyld venligst: Navn, Brugerstatus, Brik nummer og Aktiveringsdato – før du kan printe.');
                     return;
                 }
 
@@ -872,37 +930,27 @@
                 document.getElementById('r-brik').textContent = brik;
                 document.getElementById('r-start').textContent = formatDate(start);
 
-                // Switch view
-                document.getElementById('page-form').style.display = 'none';
-                document.getElementById('page-receipt').style.display = 'block';
-
-                // Update step indicators
+                // Update step indicators to show we are progresssed
                 document.getElementById('step1').className = 'step done';
-                document.getElementById('step2').className = 'step active';
                 document.getElementById('connector').className = 'step-connector done';
+                document.getElementById('step2').className = 'step active';
 
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                // Trigger print directly
+                window.print();
             }
 
-            function goToForm() {
-                document.getElementById('page-form').style.display = 'block';
-                document.getElementById('page-receipt').style.display = 'none';
-
-                // Keep Step 1 done and Step 2 active since we are finishing up
-                document.getElementById('step1').className = 'step done';
-                document.getElementById('step2').className = 'step active';
-                document.getElementById('connector').className = 'step-connector done';
-
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
 
             function sendEmail() {
                 const navn = document.getElementById('navn').value;
-                const status = document.getElementById('brugerstatus').value;
+                let status = document.getElementById('brugerstatus').value;
                 const brik = document.getElementById('brik_nummer').value;
                 const start = document.getElementById('aktiveringsdato').value;
                 const slut = document.getElementById('gyldig_til').value || 'Ikke angivet';
                 const kommentar = document.getElementById('kommentarer').value || 'Ingen';
+
+                if (status === 'Andet') {
+                    status = document.getElementById('brugerstatus_andet').value || 'Andet';
+                }
 
                 if (!navn || !status || !brik || !start) {
                     alert('Udfyld venligst alle de påkrævede felter (markeret med *).');
