@@ -476,7 +476,7 @@
 
         /* ── Print Styles ── */
         @page {
-            margin: 3cm;
+            margin: 1.5cm;
             size: A4;
         }
 
@@ -503,6 +503,7 @@
                 max-width: 100% !important;
                 margin: 0 !important;
                 padding: 0 !important;
+                page-break-inside: avoid !important;
             }
 
             .card-body {
@@ -515,7 +516,7 @@
 
             .receipt-preview {
                 border: none !important;
-                padding: 1.5cm !important; /* Ekstra luft inde i dokumentet */
+                padding: 1cm !important; /* Reduceret for at spare plads */
                 margin: 0 auto !important;
                 width: 100% !important;
             }
